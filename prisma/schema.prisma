@@ -1,0 +1,29 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id             String  @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  email          String  @unique
+  hashedPassword String?
+  tasks          Task[]
+}
+
+model Task {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  description   String
+  category      String
+  active        Boolean
+  completed     Boolean
+  currentUser   User?    @relation(fields: [currentUserId], references: [id])
+  currentUserId String   @db.ObjectId
+  createdAt     DateTime @default(now()) @map("created_at") // Optional timestamp field
+  updatedAt     DateTime @updatedAt @map("updated_at") // Optional timestamp field
+}
