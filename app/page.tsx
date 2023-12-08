@@ -1,8 +1,8 @@
 import { getServerSession } from 'next-auth'
-import { authOptions } from './api/auth/authOptions/route'
 import User from './(components)/User'
 import Signout from './(components)/Signout'
 import Link from 'next/link'
+import { authOptions } from './api/auth/[...nextauth]/route'
 
 export default async function Home() {
   const session = await getServerSession(authOptions)
