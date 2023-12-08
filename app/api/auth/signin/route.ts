@@ -1,9 +1,9 @@
 import { connectDB } from "@/src/lib/connectDB";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 import prisma from "@/prisma";
-import { compare } from "bcrypt";
 
 export async function POST(req: Request) {
   try {
@@ -17,27 +17,30 @@ export async function POST(req: Request) {
       where: { email: email },
     });
 
-    // return NextResponse.json(
-    //   { existingUserByEmail },
-    //   { status: 401 } // Use status: 401 for unauthorized access
-    // );
-
     if (!existingUserByEmail) {
       return NextResponse.json(
         { user: null, message: "Invalid Credentials" },
-        { status: 401 } // Use status: 401 for unauthorized access
+        { status: 401 }
       );
     }
 
-    const isMatch = compare(password, existingUserByEmail.hashedPassword);
+    // Compare the hashed password
+    const isMatch = await bcrypt.compare(
+      password,
+      existingUserByEmail.hashedPassword
+    );
+
     if (!isMatch) {
       return NextResponse.json(
         { message: "Password doesn't match" },
-        { status: 401 } // Use status: 401 for unauthorized access
+        { status: 401 }
       );
     }
 
-    const token = jwt.sign({ email: email }, "asdfghjkl", {
+    const key: any = process.env.JWT_SECRET;
+
+    // Sign JWT token
+    const token = jwt.sign({ email: email }, key, {
       expiresIn: "30d",
     });
 
