@@ -1,6 +1,5 @@
 import prisma from "@/prisma";
 import { connectDB } from "@/src/lib/connectDB";
-import { useSearchParams } from "next/navigation";
 import { NextResponse } from "next/server";
 
 export const POST = async (req: Request) => {
@@ -20,8 +19,6 @@ export const POST = async (req: Request) => {
 
     const isActive = active === 1;
     const isCompleted = completed === 1;
-
-    //   return NextResponse.json({ message: 'done' }, { status: 200 })
 
     await connectDB();
 
@@ -43,56 +40,31 @@ export const POST = async (req: Request) => {
       { message: "Error creating Task" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
-export async function GET(req: Request) {
-  const url = new URL(req.url);
-  const id = url.searchParams.get("id");
+export const GET = async (req: Request) => {
+  try {
+    const url = new URL(req.url);
+    const id = url.searchParams.get("id");
 
-  //   const search = searchParams.get("id");
-  // const items = await prisma.task.findMany();
+    if (!id) {
+      return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
+    }
 
-  return NextResponse.json({ id }, { status: 200 });
+    const user = await prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        tasks: true,
+      },
+    });
 
-  //   try {
+    const tasks = user?.tasks || [];
 
-  //   } catch (error) {
-  //     console.error(error);
-  //     return NextResponse.json({ message: 'Error retrieving items' }, { status: 500 });
-  //   }
-}
-
-// export const GET = async (req: Request) => {
-//    try {
-//      const body = await req.json();
-
-//     console.log('====================================');
-//     console.log(body);
-//     console.log('====================================');
-//     return NextResponse.json(body);
-
-//    } catch (error) {
-//     console.log('error', error)
-//    }
-
-//     return NextResponse.json('body');
-//     await connectDB();
-
-//     // Add an await before prisma.user.findUnique
-//     const user = await prisma.user.findUnique({
-//         where: {
-//             id: '65719515b1e9e78693a47e60'
-//         },
-//         include: {
-//             tasks: true
-//         }
-//     });
-
-//     // Assuming 'tasks' is a property of the user object
-//     const tasks = user?.tasks || [];
-
-//     return NextResponse.json({ tasks }, { status: 201 });
-// };
+    return NextResponse.json({ tasks }, { status: 200 });
+  } catch (error) {
+    console.log("error", error);
+  }
+};
