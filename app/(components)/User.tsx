@@ -1,12 +1,16 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/src/context/Auth';
 
 export default function User() {
-    const { data: session } = useSession()
+     const [auth] = useAuth();
+
+     console.log('auth', auth)
+
   return (
     <div>
-        {JSON.stringify(session)}
+         <h3> Admin Name : {auth?.user?.name}</h3>
+              <h3> Admin Email : {auth?.user?.email}</h3>
     </div>
   )
 }

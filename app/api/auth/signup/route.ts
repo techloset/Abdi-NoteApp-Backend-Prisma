@@ -8,11 +8,14 @@ export const POST = async (req: Request) => {
     const { name, email, password } = await req.json();
 
     if (!name || !email || !password)
-      return NextResponse.json({ message: 'invalid credentials' }, { status: 422 });
+      return NextResponse.json(
+        { message: "invalid credentials" },
+        { status: 422 }
+      );
 
     await connectDB();
 
-   const existingUserByEmail = await prisma.user.findUnique({
+    const existingUserByEmail = await prisma.user.findUnique({
       where: { email: email },
     });
 
@@ -33,7 +36,6 @@ export const POST = async (req: Request) => {
     });
 
     return NextResponse.json({ newUser }, { status: 201 });
-
   } catch (error) {
     return NextResponse.json(
       { message: "Error creating user" },
