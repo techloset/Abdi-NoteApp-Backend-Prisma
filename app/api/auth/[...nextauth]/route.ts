@@ -5,7 +5,7 @@ import { connectDB } from "@/src/lib/connectDB";
 import prisma from "@/prisma";
 import { AuthOptions } from "next-auth";
 
-export const authOptions: AuthOptions = {
+const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: "credentials",
