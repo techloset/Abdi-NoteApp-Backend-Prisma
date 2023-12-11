@@ -44,18 +44,25 @@ export async function POST(req: Request) {
       expiresIn: "30d",
     });
 
+    const user = {
+      id: existingUserByEmail.id,
+      email: existingUserByEmail.email,
+      name: existingUserByEmail.name,
+    };
+
     return NextResponse.json(
       {
-        existingUserByEmail,
-        message: "User Login",
-        token: token,
+        success: true,
+        message: "login successfully",
+        user,
+        token,
       },
       { status: 201 }
     );
   } catch (error) {
     console.error("Error:", error);
     return NextResponse.json(
-      { message: "Error User Not Login" },
+      { message: "Error while signing in" },
       { status: 500 }
     );
   }
