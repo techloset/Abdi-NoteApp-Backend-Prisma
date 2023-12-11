@@ -4,21 +4,12 @@ import { NextResponse } from "next/server";
 
 export const POST = async (req: Request) => {
   try {
-    const { title, description, category, active, completed, currentUserId } =
+    const { title, description, category, active, currentUserId } =
       await req.json();
 
-    if (
-      !title ||
-      !description ||
-      !category ||
-      !currentUserId ||
-      !completed ||
-      !active
-    )
+    if (!title || !description || !category || !currentUserId || !active) {
       return NextResponse.json({ message: "Invalid Data" }, { status: 422 });
-
-    const isActive = active === 1;
-    const isCompleted = completed === 1;
+    }
 
     await connectDB();
 
@@ -27,8 +18,8 @@ export const POST = async (req: Request) => {
         title,
         description,
         category,
-        active: isActive,
-        completed: isCompleted,
+        active,
+        completed: false,
         currentUserId,
       },
     });
