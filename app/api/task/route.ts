@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export const POST = async (req: Request) => {
   try {
-    const { title, description, category, active, currentUserId } =
+    const { title, description, category, active, currentUserId, image } =
       await req.json();
 
     if (
@@ -13,7 +13,7 @@ export const POST = async (req: Request) => {
       !category ||
       !currentUserId ||
       !active ||
-      !currentUserId
+      !image
     ) {
       return NextResponse.json({ message: "Invalid Data" }, { status: 422 });
     }
@@ -25,9 +25,10 @@ export const POST = async (req: Request) => {
         title,
         description,
         category,
-        active,
+        active: Boolean(active), // Ensure active is a boolean
         completed: false,
         currentUserId,
+        image,
       },
     });
 
@@ -50,6 +51,8 @@ export const GET = async (req: Request) => {
       return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
     }
 
+    await connectDB();
+
     const user = await prisma.user.findUnique({
       where: {
         id: id,
@@ -59,10 +62,18 @@ export const GET = async (req: Request) => {
       },
     });
 
-    const tasks = user?.tasks || [];
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const tasks = user.tasks || [];
 
     return NextResponse.json({ tasks }, { status: 200 });
   } catch (error) {
     console.log("error", error);
+    return NextResponse.json(
+      { message: "Error fetching tasks" },
+      { status: 500 }
+    );
   }
 };
