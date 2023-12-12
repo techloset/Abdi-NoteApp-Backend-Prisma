@@ -25,7 +25,7 @@ export const POST = async (req: Request) => {
         title,
         description,
         category,
-        active: Boolean(active), // Ensure active is a boolean
+        active: Boolean(active), // Ensure active is a boolean yay
         completed: false,
         currentUserId,
         image,
