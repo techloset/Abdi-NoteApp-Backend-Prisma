@@ -26,4 +26,5 @@ model Task {
   currentUserId String   @db.ObjectId
   createdAt     DateTime @default(now()) @map("created_at") // Optional timestamp field
   updatedAt     DateTime @updatedAt @map("updated_at") // Optional timestamp field
+  image         String
 }
