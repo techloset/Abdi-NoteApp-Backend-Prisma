@@ -8,40 +8,48 @@ generator client {
 }
 
 model User {
-  id             String    @id @default(auto()) @map("_id") @db.ObjectId
-  name           String
-  email          String    @unique
-  hashedPassword String
-  profilePic     String?  
-  buyTasks       BuyTask[]
-  mainGoals      MainGoal[]
+  id                 String               @id @default(auto()) @map("_id") @db.ObjectId
+  name               String
+  email              String               @unique
+  hashedPassword     String
+  profilePic         String?
+  buyTasks           BuyTask[]
+  mainGoals          MainGoal[]
+  guidanceImageModel GuidanceImageModel[]
 }
 
 model BuyTask {
-  id        String      @id @default(auto()) @map("_id") @db.ObjectId
-  title     String
-  isChecked Boolean
-  currentUser   User?    @relation(fields: [currentUserId], references: [id])
-  currentUserId String   @db.ObjectId
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  isChecked     Boolean
+  currentUser   User?   @relation(fields: [currentUserId], references: [id])
+  currentUserId String  @db.ObjectId
 }
 
 model MainGoal {
-  id         String     @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  isChecked     Boolean  
-  subGoals  SubGoal[]
-  currentUser   User?    @relation(fields: [currentUserId], references: [id])
-  currentUserId String   @db.ObjectId
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  isChecked     Boolean
+  subGoals      SubGoal[]
+  currentUser   User?     @relation(fields: [currentUserId], references: [id])
+  currentUserId String    @db.ObjectId
 
   @@map(name: "main_goals")
 }
 
 model SubGoal {
-  id         String      @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  isChecked    Boolean  
-  mainGoal   MainGoal  @relation(fields: [mainGoalId], references: [id])
-  mainGoalId  String  @db.ObjectId
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  title      String
+  isChecked  Boolean
+  mainGoal   MainGoal @relation(fields: [mainGoalId], references: [id])
+  mainGoalId String   @db.ObjectId
 
   @@map(name: "subGoals")
+}
+
+model GuidanceImageModel {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  image         String
+  currentUser   User?  @relation(fields: [currentUserId], references: [id])
+  currentUserId String @db.ObjectId
 }
