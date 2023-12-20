@@ -48,6 +48,7 @@ export async function POST(req: Request) {
       id: existingUserByEmail.id,
       email: existingUserByEmail.email,
       name: existingUserByEmail.name,
+      profilePic: existingUserByEmail.profilePic,
     };
 
     return NextResponse.json(
