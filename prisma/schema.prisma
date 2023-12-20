@@ -8,26 +8,13 @@ generator client {
 }
 
 model User {
-  id             String  @id @default(auto()) @map("_id") @db.ObjectId
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
   name           String
-  email          String  @unique
-  hashedPassword String?
-  tasks          Task[]
-  buyTasks          BuyTask[]
-  mainGoals          MainGoal[]
-}
-
-model Task {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  title         String
-  description   String
-  category      String
-  active        Boolean
-  completed     Boolean
-  currentUser   User?    @relation(fields: [currentUserId], references: [id])
-  currentUserId String   @db.ObjectId
-  createdAt     DateTime @default(now()) @map("created_at") // Optional timestamp field
-  updatedAt     DateTime @updatedAt @map("updated_at") // Optional timestamp field
+  email          String    @unique
+  hashedPassword String
+  profilePic     String?  
+  buyTasks       BuyTask[]
+  mainGoals      MainGoal[]
 }
 
 model BuyTask {

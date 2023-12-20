@@ -65,8 +65,6 @@ export async function PUT(req: Request) {
     const body = await req.json();
     const { id, isChecked } = body;
 
-    // return NextResponse.json({ id, isChecked });
-
     const updatedItem = await prisma.mainGoal.update({
       where: { id: id },
       data: { isChecked: isChecked },
