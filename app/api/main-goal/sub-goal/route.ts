@@ -4,31 +4,35 @@ import { NextResponse } from "next/server";
 
 export const POST = async (req: Request) => {
   try {
-    const { title, isChecked, mainGoalId } = await req.json();
+    const { mainGoalId, title, isChecked } = await req.json();
 
-    if (!title || !mainGoalId) {
+    if (!mainGoalId || !title) {
       return NextResponse.json(
-        { message: "Invalid Data", title, isChecked, mainGoalId },
+        { message: "Invalid Data", mainGoalId, title, isChecked },
         { status: 422 }
       );
     }
 
-    // return;
     await connectDB();
 
     const newSubGoal = await prisma.subGoal.create({
       data: {
+        mainGoalId,
         title,
         isChecked,
-        mainGoalId,
       },
+    });
+
+    await prisma.mainGoal.update({
+      where: { id: mainGoalId },
+      data: { isChecked: false },
     });
 
     return NextResponse.json({ newSubGoal }, { status: 201 });
   } catch (error) {
-    console.error("Error creating Sub Goal:", error);
+    console.error("Error creating Subgoal:", error);
     return NextResponse.json(
-      { message: "Error creating Sub Goal" },
+      { message: "Error creating Subgoal" },
       { status: 500 }
     );
   }
@@ -64,8 +68,6 @@ export async function PUT(req: Request) {
   try {
     const body = await req.json();
     const { id, isChecked } = body;
-
-    // return NextResponse.json({ id, isChecked });
 
     const updatedItem = await prisma.subGoal.update({
       where: { id: id },

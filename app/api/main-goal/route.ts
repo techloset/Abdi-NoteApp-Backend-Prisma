@@ -65,25 +65,73 @@ export async function PUT(req: Request) {
     const body = await req.json();
     const { id, isChecked } = body;
 
-    const updatedItem = await prisma.mainGoal.update({
+    // Connect to the database
+    await connectDB();
+
+    // Update the main goal
+    const updatedMainGoal = await prisma.mainGoal.update({
       where: { id: id },
       data: { isChecked: isChecked },
+      include: {
+        subGoals: true,
+      },
     });
 
+    // Check if the main goal has subGoals
+    if (updatedMainGoal.subGoals && updatedMainGoal.subGoals.length > 0) {
+      // Update the isChecked status of subGoals
+      await prisma.subGoal.updateMany({
+        where: {
+          mainGoalId: id,
+        },
+        data: {
+          isChecked: isChecked,
+        },
+      });
+    }
+
     const serializedItem = {
-      ...updatedItem,
-      id: updatedItem,
+      ...updatedMainGoal,
+      id: updatedMainGoal,
     };
 
     return NextResponse.json({
-      message: "main goal updated",
+      message: "Main goal and subGoals updated",
       item: serializedItem,
     });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { message: "main goal cannot be updated" },
+      { message: "Main goal and subGoals cannot be updated" },
       { status: 409 }
     );
   }
 }
+
+// export async function PUT(req: Request) {
+//   try {
+//     const body = await req.json();
+//     const { id, isChecked } = body;
+
+//     const updatedItem = await prisma.mainGoal.update({
+//       where: { id: id },
+//       data: { isChecked: isChecked },
+//     });
+
+//     const serializedItem = {
+//       ...updatedItem,
+//       id: updatedItem,
+//     };
+
+//     return NextResponse.json({
+//       message: "main goal updated",
+//       item: serializedItem,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     return NextResponse.json(
+//       { message: "main goal cannot be updated" },
+//       { status: 409 }
+//     );
+//   }
+// }
